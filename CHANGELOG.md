@@ -1,5 +1,8 @@
 # Change Log
 
+## 2.1.0-teepublic
+Add support for multiple seed files.
+
 ## 2.0.0
 Upgrade to AWS SDK 3.0, reduce dependence to S3 specifically.
 

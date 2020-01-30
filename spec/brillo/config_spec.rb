@@ -1,6 +1,30 @@
 require 'spec_helper'
 
 RSpec.describe Brillo::Config do
+  it 'supports multiple files' do
+    config = YAML.load <<-YAML
+    name: my_app
+    files:
+      - filename: my_first_file
+        explore:
+        obfuscations:
+          created_at:     default_time
+          my_table.test:  name
+      - filename: my_second_file
+        explore:
+        obfuscations:
+          created_at:     default_time
+          my_table.test:  name
+
+      YAML
+
+      config = Brillo::Config.new(config.deep_symbolize_keys)
+  end
+
+  it 'supports ERB' do
+
+  end
+
   it "converts obfuscation syntax to Polo compatible" do
     config = YAML.load <<-YAML
     name: my_app

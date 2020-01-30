@@ -111,3 +111,7 @@ end
 ## To Do
 
 - Support alternative transfer mechanisms
+
+## Local Development
+Create a gem file: `gem build brillo.gemspec -o pkg/brillo-2.1.0.gem`
+Install locally:  `gem install --dev pkg/brillo-2.1.0.gem`
