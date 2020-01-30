@@ -6,7 +6,7 @@ module Brillo
       @app_name =               options.fetch(:name)
       default_assoc_map =       options[:explore] || {}
       default_file =            { explore: default_assoc_map }
-      @files =                  options[:files] || [default_file] || []
+      @files =                  parse_files(options[:files] || [default_file] || [])
       @obfuscations =           parse_obfuscations(options[:obfuscations] || {})
       @compress =               options.fetch(:compress, true)
       @transfer_config =        Transferrer::Config.new(**options.fetch(:transfer, {}))
@@ -15,8 +15,8 @@ module Brillo
     end
 
     def verify!
-      @files.each do |file_descriptor|
-        file_descriptor[:explore].each do |klass, _|
+      @files.each do |file|
+        file.associations.each do |klass, _|
           next if klass.to_s.camelize.safe_constantize
 
           raise ConfigParseError, "Class #{klass} not found"
@@ -40,34 +40,6 @@ module Brillo
       Scrubber::TACTICS[name] = tactic
     end
 
-    def app_tmp
-      Rails.root.join "tmp"
-    end
-
-    def filename(custom_filename = nil)
-      path = [app_name]
-      path << custom_filename if custom_filename
-      path << 'scubbed'
-      path.join('-')
-    end
-
-    def dump_filename(custom_filename)
-      "#{filename(custom_filename)}.dmp"
-    end
-
-    def compressed_filename(custom_filename)
-      file = dump_filename(custom_filename)
-      compress ? "#{file}.gz" : file
-    end
-
-    def dump_path(custom_filename)
-      app_tmp + dump_filename(custom_filename)
-    end
-
-    def compressed_dump_path(custom_filename)
-      app_tmp + compressed_filename(custom_filename)
-    end
-
     def db
       @db_config ||= Rails.configuration.database_configuration[Rails.env].dup
     end
@@ -85,6 +57,12 @@ module Brillo
         Adapter::Postgres.new(db)
       else
         raise ConfigParseError, "Unsupported DB adapter #{db["adapter"]}"
+      end
+    end
+
+    def parse_files(files)
+      files.map do |file_hash|
+        Brillo::File.new(@app_name, file_hash.merge(compress: @compress))
       end
     end
 

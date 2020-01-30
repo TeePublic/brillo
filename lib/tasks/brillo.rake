@@ -17,6 +17,7 @@ namespace :db do
   desc 'Load a previously created scrubbed database copy from S3'
   task :load => :environment do
     begin
+      # TODO: Specific file command line options
       Brillo.load!
     rescue Brillo::CredentialsError => e
       puts e

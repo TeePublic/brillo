@@ -7,17 +7,20 @@ module Brillo
     attr_reader :config
 
     def initialize(config)
+      # TODO: Heroku app support 
       raise "⚠️ DON'T LOAD IN PRODUCTION! ⚠️" if production?
       @config = config
     end
 
     def load!
+      # TODO: multi file support
       config.transferrer.download
       recreate_db
       import_sql
     end
 
     def recreate_db
+      # TODO: check if we want to do this
       config.adapter.recreate_db
     end
 

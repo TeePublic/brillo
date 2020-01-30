@@ -33,12 +33,14 @@ module Brillo
     end
 
     def scrub!
-      FileUtils.rm config.compressed_filename, force: true
       configure_polo
-      adapter.dump_structure_and_migrations(config)
-      explore_all_classes
-      compress
-      config.transferrer.upload
+      config.files.each do |filename, contents|
+        adapter.dump_structure_and_migrations(config)
+        FileUtils.rm config.compressed_filename, force: true
+        explore_all_classes
+        compress
+        config.transferrer.upload
+      end
     end
 
     def explore_all_classes

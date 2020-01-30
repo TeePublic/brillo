@@ -7,22 +7,15 @@ RSpec.describe Brillo::Config do
     files:
       - filename: my_first_file
         explore:
-        obfuscations:
-          created_at:     default_time
-          my_table.test:  name
       - filename: my_second_file
         explore:
-        obfuscations:
-          created_at:     default_time
-          my_table.test:  name
+    obfuscations:
+      created_at:     default_time
+      my_table.test:  name
+    YAML
 
-      YAML
-
-      config = Brillo::Config.new(config.deep_symbolize_keys)
-  end
-
-  it 'supports ERB' do
-
+    config = Brillo::Config.new(config.deep_symbolize_keys)
+    expect(config.files.count).to eq(2)
   end
 
   it "converts obfuscation syntax to Polo compatible" do
