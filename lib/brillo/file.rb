@@ -32,7 +32,7 @@ module Brillo
       path = [@namespace]
       path << @filename if @filename
       path << 'scrubbed'
-      "#{@path}/#{path.join('-')}.#{@extension}"
+      "#{path.join('-')}.#{@extension}"
     end
   end
 end
