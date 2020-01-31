@@ -62,7 +62,7 @@ module Brillo
 
     def parse_files(files)
       files.map do |file_hash|
-        Brillo::File.new(@app_name, file_hash.merge(compress: @compress))
+        Brillo::File.new(@app_name, file_hash)
       end
     end
 

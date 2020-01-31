@@ -30,23 +30,38 @@ module Brillo
     def initialize(config)
       @config = config
       @adapter = config.adapter
+
+      @bucket = transfer_config.bucket
+      @fog_config = config.transfer_config.fog_config
     end
 
     def scrub!
       configure_polo
-      config.files.each do |filename, contents|
-        adapter.dump_structure_and_migrations(config)
-        FileUtils.rm config.compressed_filename, force: true
-        explore_all_classes
-        compress
-        config.transferrer.upload
+      config.files.each do |file|
+        filename_with_path = Rails.root.join('tmp', file.filename)
+        filename_with_path_compressed = filename_with_path + '.gz'
+
+        # Remove previous files
+        FileUtils.rm filename_with_path, force: true
+        FileUtils.rm filename_with_path_compressed, force: true
+
+        adapter.dump_structure_and_migrations(filename_with_path) if file.include_schema?
+        explore_all_classes(filename_with_path, file.associations)
+
+        upload_file = filename_with_path
+        if config.compress
+          execute!("gzip -f #{filename_with_path}")
+          upload_file = filename_with_path_compressed
+        end
+
+        upload!(upload_file)
       end
     end
 
-    def explore_all_classes
-      File.open(config.dump_path, "a") do |sql_file|
+    def explore_all_classes(path, klass_associations)
+      File.open(path, "a") do |sql_file|
         sql_file.puts(adapter.header)
-        klass_association_map.each do |klass, options|
+        klass_associations.each do |klass, options|
           begin
             klass = deserialize_class(klass)
             tactic = deserialize_tactic(klass, options)
@@ -68,9 +83,9 @@ module Brillo
 
     private
 
-    def compress
-      return unless config.compress
-      execute!("gzip -f #{config.dump_path}")
+    def upload!
+      connection = Fog::Storage.new(@fog_config)
+      connection.directories.new(key: @bucket)
     end
 
     def explore_class(klass, tactic_or_ids, associations)
@@ -81,10 +96,6 @@ module Brillo
           yield "#{row};"
         end
       end
-    end
-
-    def klass_association_map
-      config.klass_association_map
     end
 
     def obfuscations

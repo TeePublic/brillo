@@ -6,7 +6,8 @@ module Brillo
       filename: nil,
       include_schema: true,
       recreate_on_import: true,
-      compress: false
+      compress: false,
+      extension: 'dmp'
     }.freeze
  
     def initialize(namespace, options = {})
@@ -14,7 +15,7 @@ module Brillo
       @namespace =          namespace
       @extension =          options[:compress]
       @filename =           options[:filename]
-      @extension =          options[:compress] ? 'dmp.gz' : 'dmp'
+      @extension =          options[:extension]
       @associations =       options[:explore]
       @include_schema =     options[:include_schema]
       @recreate_on_import = options[:recreate_on_import]
