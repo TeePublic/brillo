@@ -1,4 +1,3 @@
-require 'active_record'
 require 'brillo'
 
 RSpec.configure do |config|

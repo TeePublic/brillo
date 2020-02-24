@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "rake"
   spec.add_dependency "capistrano", "~> 3.0"
-  spec.add_dependency "fog", "~> 2.2.0"
+  spec.add_dependency "fog-aws", "~> 3.0"
   spec.add_dependency "polo", "~> 0.4"
   spec.add_dependency "aws-sdk-s3", "~> 1"
   spec.add_dependency "activerecord",  ">= 3.2"

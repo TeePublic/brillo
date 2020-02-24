@@ -9,16 +9,17 @@ module Brillo
       compress: false,
       extension: 'dmp'
     }.freeze
- 
+
     def initialize(namespace, options = {})
       options = DEFAULT_OPTIONS.merge(options)
       @namespace =          namespace
-      @extension =          options[:compress]
-      @filename =           options[:filename]
       @extension =          options[:extension]
+      @filename =           options[:filename]
       @associations =       options[:explore]
       @include_schema =     options[:include_schema]
       @recreate_on_import = options[:recreate_on_import]
+
+      @extension += '.gz' if options[:compress]
     end
 
     def include_schema?
